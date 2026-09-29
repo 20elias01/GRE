@@ -24,7 +24,7 @@ clear
 
 echo -e "${CYAN}"
 echo "╔════════════════════════════════════════════╗"
-echo "║         GRE Tunnel Manager v2.3            ║"
+echo "║            GRE Tunnel - EliasVPN           ║"
 echo "║     Persistent • Key-based • Easy Setup    ║"
 echo "╚════════════════════════════════════════════╝"
 echo -e "${NC}"
