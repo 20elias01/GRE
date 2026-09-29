@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 PURPLE='\033[0;35m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 BOLD='\033[1m'
 
 # Check root
@@ -24,31 +24,56 @@ clear
 
 echo -e "${CYAN}"
 echo "╔════════════════════════════════════════════╗"
-echo "║         GRE Tunnel Manager v1.1            ║"
-echo "║     Persistent • Clean • Easy Setup        ║"
+echo "║         GRE Tunnel Manager v2.0            ║"
+echo "║     Persistent • Key-based • Easy Setup    ║"
 echo "╚════════════════════════════════════════════╝"
 echo -e "${NC}"
 
 echo -e "${BOLD}Please select an option:${NC}"
 echo
 echo -e "  ${GREEN}1)${NC}  Setup GRE Tunnel  ${YELLOW}→ Iran Server${NC}"
-echo -e "  ${GREEN}2)${NC}  Setup GRE Tunnel  ${YELLOW}→ Outside Server${NC}"
+echo -e "  ${GREEN}2)${NC}  Setup GRE Tunnel  ${YELLOW}→ Outside Server (with Key)${NC}"
 echo -e "  ${RED}3)${NC}  Complete Remove   ${YELLOW}→ Delete everything${NC}"
 echo
 echo -n -e "${BOLD}Enter your choice [1-3]: ${NC}"
 read choice
 
-# Function to validate IP
+# Validate IP
 validate_ip() {
     local ip=$1
-    if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        return 0
-    else
-        return 1
-    fi
+    [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]
 }
 
-# Function to create systemd service
+# Create simple encrypted key
+generate_key() {
+    local local_ip=$1
+    local remote_ip=$2
+    # Simple reversible "encryption"
+    echo -n "${local_ip}|${remote_ip}|GRE2025" | base64 | tr '+/' '-_' | rev
+}
+
+# Decode key
+decode_key() {
+    local key=$1
+    local decoded
+    decoded=$(echo "$key" | rev | tr '-_' '+/' | base64 -d 2>/dev/null)
+    
+    if [[ $? -ne 0 || -z "$decoded" ]]; then
+        return 1
+    fi
+    
+    local local_ip=$(echo "$decoded" | cut -d'|' -f1)
+    local remote_ip=$(echo "$decoded" | cut -d'|' -f2)
+    local salt=$(echo "$decoded" | cut -d'|' -f3)
+    
+    if [[ "$salt" != "GRE2025" ]] || ! validate_ip "$local_ip" || ! validate_ip "$remote_ip"; then
+        return 1
+    fi
+    
+    echo "$local_ip $remote_ip"
+}
+
+# Create systemd service
 create_service() {
     local local_ip=$1
     local remote_ip=$2
@@ -75,7 +100,7 @@ WantedBy=multi-user.target
 EOF
 
     systemctl daemon-reload
-    systemctl enable gre1.service
+    systemctl enable gre1.service > /dev/null 2>&1
     systemctl restart gre1.service
 }
 
@@ -89,7 +114,6 @@ case $choice in
 
         echo -n -e "Enter ${BOLD}Iran (Local)${NC} IP: "
         read LOCAL_IP
-
         if ! validate_ip "$LOCAL_IP"; then
             echo -e "${RED}Invalid IP address!${NC}"
             exit 1
@@ -97,7 +121,6 @@ case $choice in
 
         echo -n -e "Enter ${BOLD}Outside (Remote)${NC} IP: "
         read REMOTE_IP
-
         if ! validate_ip "$REMOTE_IP"; then
             echo -e "${RED}Invalid IP address!${NC}"
             exit 1
@@ -109,17 +132,30 @@ case $choice in
         echo -e "  Remote : ${GREEN}${REMOTE_IP}${NC}"
         echo -e "  IPv6   : ${GREEN}fd00:1::1/64${NC}"
 
-        # Clean old tunnel if exists
         ip link set gre1 down 2>/dev/null
         ip tunnel del gre1 2>/dev/null
 
         create_service "$LOCAL_IP" "$REMOTE_IP" "fd00:1::1"
 
+        # Generate Key
+        KEY=$(generate_key "$LOCAL_IP" "$REMOTE_IP")
+
         echo
         echo -e "${GREEN}✓ GRE Tunnel successfully created and enabled!${NC}"
         echo -e "${GREEN}✓ It will persist after reboot.${NC}"
         echo
-        echo -e "Test with: ${CYAN}ping6 fd00:1::2${NC}"
+        echo -e "${PURPLE}════════════════════════════════════════${NC}"
+        echo -e "${BOLD}${YELLOW}  Your Connection Key (copy this):${NC}"
+        echo -e "${PURPLE}════════════════════════════════════════${NC}"
+        echo
+        echo -e "  ${CYAN}${KEY}${NC}"
+        echo
+        echo -e "${PURPLE}════════════════════════════════════════${NC}"
+        echo -e "Use this key on the Outside server (Option 2)"
+        echo
+
+        echo -e "${YELLOW}Testing connection (4 packets)...${NC}"
+        ping6 -c 4 fd00:1::2
         ;;
 
     2)
@@ -129,29 +165,32 @@ case $choice in
         echo -e "${CYAN}══════════════════════════════════════${NC}"
         echo
 
-        echo -n -e "Enter ${BOLD}Outside (Local)${NC} IP: "
-        read LOCAL_IP
+        echo -n -e "Enter the ${BOLD}Connection Key${NC}: "
+        read KEY
 
-        if ! validate_ip "$LOCAL_IP"; then
-            echo -e "${RED}Invalid IP address!${NC}"
+        DECODED=$(decode_key "$KEY")
+        if [[ $? -ne 0 || -z "$DECODED" ]]; then
+            echo -e "${RED}Invalid or corrupted key!${NC}"
             exit 1
         fi
 
-        echo -n -e "Enter ${BOLD}Iran (Remote)${NC} IP: "
-        read REMOTE_IP
+        # From Iran side: LOCAL was Iran, REMOTE was Outside
+        IRAN_IP=$(echo $DECODED | awk '{print $1}')
+        OUTSIDE_IP=$(echo $DECODED | awk '{print $2}')
 
-        if ! validate_ip "$REMOTE_IP"; then
-            echo -e "${RED}Invalid IP address!${NC}"
-            exit 1
-        fi
+        # On Outside server:
+        LOCAL_IP=$OUTSIDE_IP
+        REMOTE_IP=$IRAN_IP
 
         echo
-        echo -e "${YELLOW}Creating tunnel...${NC}"
-        echo -e "  Local  : ${GREEN}${LOCAL_IP}${NC}"
-        echo -e "  Remote : ${GREEN}${REMOTE_IP}${NC}"
-        echo -e "  IPv6   : ${GREEN}fd00:1::2/64${NC}"
+        echo -e "${GREEN}Key successfully decoded!${NC}"
+        echo -e "  Local  (Outside) : ${GREEN}${LOCAL_IP}${NC}"
+        echo -e "  Remote (Iran)    : ${GREEN}${REMOTE_IP}${NC}"
+        echo -e "  IPv6             : ${GREEN}fd00:1::2/64${NC}"
+        echo
 
-        # Clean old tunnel if exists
+        echo -e "${YELLOW}Creating tunnel...${NC}"
+
         ip link set gre1 down 2>/dev/null
         ip tunnel del gre1 2>/dev/null
 
@@ -161,7 +200,9 @@ case $choice in
         echo -e "${GREEN}✓ GRE Tunnel successfully created and enabled!${NC}"
         echo -e "${GREEN}✓ It will persist after reboot.${NC}"
         echo
-        echo -e "Test with: ${CYAN}ping6 fd00:1::1${NC}"
+
+        echo -e "${YELLOW}Testing connection (4 packets)...${NC}"
+        ping6 -c 4 fd00:1::1
         ;;
 
     3)
@@ -182,8 +223,6 @@ case $choice in
         echo -e "${YELLOW}Deleting tunnel interface...${NC}"
         ip link set gre1 down 2>/dev/null
         ip tunnel del gre1 2>/dev/null
-
-        # Extra cleanup
         ip link delete gre1 2>/dev/null
 
         echo
