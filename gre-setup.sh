@@ -24,7 +24,7 @@ clear
 
 echo -e "${CYAN}"
 echo "╔════════════════════════════════════════════╗"
-echo "║         GRE Tunnel Manager v2.0            ║"
+echo "║         GRE Tunnel Manager v2.1            ║"
 echo "║     Persistent • Key-based • Easy Setup    ║"
 echo "╚════════════════════════════════════════════╝"
 echo -e "${NC}"
@@ -48,7 +48,6 @@ validate_ip() {
 generate_key() {
     local local_ip=$1
     local remote_ip=$2
-    # Simple reversible "encryption"
     echo -n "${local_ip}|${remote_ip}|GRE2025" | base64 | tr '+/' '-_' | rev
 }
 
@@ -56,7 +55,7 @@ generate_key() {
 decode_key() {
     local key=$1
     local decoded
-    decoded=$(echo "$key" | rev | tr '-_' '+/' | base64 -d 2>/dev/null)
+    decoded=$(echo "$key" | rev | tr '_-' '/+' | base64 -d 2>/dev/null)
     
     if [[ $? -ne 0 || -z "$decoded" ]]; then
         return 1
@@ -137,7 +136,6 @@ case $choice in
 
         create_service "$LOCAL_IP" "$REMOTE_IP" "fd00:1::1"
 
-        # Generate Key
         KEY=$(generate_key "$LOCAL_IP" "$REMOTE_IP")
 
         echo
@@ -174,11 +172,9 @@ case $choice in
             exit 1
         fi
 
-        # From Iran side: LOCAL was Iran, REMOTE was Outside
         IRAN_IP=$(echo $DECODED | awk '{print $1}')
         OUTSIDE_IP=$(echo $DECODED | awk '{print $2}')
 
-        # On Outside server:
         LOCAL_IP=$OUTSIDE_IP
         REMOTE_IP=$IRAN_IP
 
