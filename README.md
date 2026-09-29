@@ -30,4 +30,4 @@
 ### ⚡ One-Command Installation
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/USERNAME/REPO/main/gre-setup.sh)
+bash <(curl -sL https://raw.githubusercontent.com/20elias01/GRE/main/gre-setup.sh)
