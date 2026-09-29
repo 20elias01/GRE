@@ -28,74 +28,81 @@
 
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/20elias01/GRE/main/gre-setup.sh)
-🖥️ How to Use
+```
 
-Run the script on the Iran server → Choose option 1
-Copy the generated Connection Key
-Run the script on the Outside server → Choose option 2 and paste the key
-Done!
+### 🖥️ How to Use
 
-After Setup:
+1. Run the script on the **Iran** server → Choose option `1`
+2. Copy the generated **Connection Key**
+3. Run the script on the **Outside** server → Choose option `2` and paste the key
+4. Done!
 
-Iran side shows the destination IPv6
-Outside side automatically tests the connection with 4 pings
+#### After Setup:
+- Iran side shows the destination IPv6
+- Outside side automatically tests the connection with 4 pings
 
-🗑️ Complete Removal
-Run the script again and choose option 3.
+### 🗑️ Complete Removal
 
+Run the script again and choose option `3`.  
 It completely removes the tunnel, service, and all traces.
-📝 Technical Notes
 
-Tunnel IPv6 addresses:
-Iran: fd00:1::1/64
-Outside: fd00:1::2/64
+### 📝 Technical Notes
 
-Protocol 47 (GRE) must be allowed in firewall
-Must be run as root
+- Tunnel IPv6 addresses:
+  - Iran: `fd00:1::1/64`
+  - Outside: `fd00:1::2/64`
+- Protocol **47 (GRE)** must be allowed in firewall
+- Must be run as **root**
 
+---
 
-🇮🇷 نسخه فارسی
-ابزاری تمیز، پایدار و مبتنی بر کلید برای راه‌اندازی تونل GRE
-✨ ویژگی‌ها
+# 🇮🇷 نسخه فارسی
 
-منوی رنگی و زیبای تعاملی
-کاملاً پایدار (بعد از ریبوت هم باقی می‌ماند)
-سیستم کلید هوشمند (نیازی به وارد کردن مجدد IP در سرور دوم نیست)
-نصب با یک دستور از گیت‌هاب
-گزینه حذف کامل و تمیز
-اعتبارسنجی خودکار آدرس IP
+**ابزاری تمیز، پایدار و مبتنی بر کلید برای راه‌اندازی تونل GRE**
 
-⚡ نصب سریع با یک دستور
-Bashbash <(curl -sL https://raw.githubusercontent.com/20elias01/GRE/main/gre-setup.sh)
-🖥️ نحوه استفاده
+### ✨ ویژگی‌ها
 
-اسکریپت را روی سرور ایران اجرا کنید → گزینه 1 را انتخاب کنید
-کلید اتصال تولید شده را کپی کنید
-اسکریپت را روی سرور خارج اجرا کنید → گزینه 2 را انتخاب کرده و کلید را وارد کنید
-تمام!
+- منوی رنگی و زیبای تعاملی
+- کاملاً پایدار (بعد از ریبوت هم باقی می‌ماند)
+- سیستم کلید هوشمند (نیازی به وارد کردن مجدد IP در سرور دوم نیست)
+- نصب با یک دستور از گیت‌هاب
+- گزینه حذف کامل و تمیز
+- اعتبارسنجی خودکار آدرس IP
 
-بعد از راه‌اندازی:
+### ⚡ نصب سریع با یک دستور
 
-سمت ایران آدرس IPv6 مقصد را نمایش می‌دهد
-سمت خارج به صورت خودکار ۴ پینگ تست می‌گیرد
+```bash
+bash <(curl -sL https://raw.githubusercontent.com/20elias01/GRE/main/gre-setup.sh)
+```
 
-🗑️ حذف کامل
-دوباره اسکریپت را اجرا کرده و گزینه 3 را انتخاب کنید.
+### 🖥️ نحوه استفاده
 
+1. اسکریپت را روی **سرور ایران** اجرا کنید → گزینه `1` را انتخاب کنید
+2. **کلید اتصال** تولید شده را کپی کنید
+3. اسکریپت را روی **سرور خارج** اجرا کنید → گزینه `2` را انتخاب کرده و کلید را وارد کنید
+4. تمام!
+
+#### بعد از راه‌اندازی:
+- سمت ایران آدرس IPv6 مقصد را نمایش می‌دهد
+- سمت خارج به صورت خودکار ۴ پینگ تست می‌گیرد
+
+### 🗑️ حذف کامل
+
+دوباره اسکریپت را اجرا کرده و گزینه `3` را انتخاب کنید.  
 تونل، سرویس و تمام آثار آن به طور کامل پاک می‌شود.
-📝 نکات فنی
 
-آدرس‌های IPv6 داخل تونل:
-ایران: fd00:1::1/64
-خارج: fd00:1::2/64
+### 📝 نکات فنی
 
-پروتکل ۴۷ (GRE) باید در فایروال باز باشد
-اسکریپت باید با دسترسی root اجرا شود
+- آدرس‌های IPv6 داخل تونل:
+  - ایران: `fd00:1::1/64`
+  - خارج: `fd00:1::2/64`
+- پروتکل **۴۷ (GRE)** باید در فایروال باز باشد
+- اسکریپت باید با دسترسی **root** اجرا شود
 
+---
 
-
-  ساخته شده با ❤️ توسط EliasVPN
-
-  Made with ❤️ by EliasVPN
-
+<p align="center">
+  <b>ساخته شده با ❤️ توسط EliasVPN</b><br>
+  <b>Made with ❤️ by EliasVPN</b>
+</p>
 ```
