@@ -24,7 +24,7 @@
 ### ⚡ نصب سریع با یک دستور
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/20elias01/GRE/main/gre-setup.sh)
+bash <(curl -sL https://raw.githubusercontent.com/20elias01/GRE-IPv6Local/main/gre-setup.sh)
 ```
 
 ### 🖥️ نحوه استفاده
