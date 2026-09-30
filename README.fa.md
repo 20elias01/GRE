@@ -1,4 +1,4 @@
-# 🚀 مدیریت تونل GRE
+# 🚀 مدیریت تونل GRE-IPv6Local
 
 <p align="center">
   <a href="./README.md">
