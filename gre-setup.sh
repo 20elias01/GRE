@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================
-#        GRE Tunnel Manager
+#     GRE-IPv6Local Tunnel Manager
 # ==============================
 
 # Colors
@@ -24,7 +24,7 @@ clear
 
 echo -e "${CYAN}"
 echo "╔════════════════════════════════════════════╗"
-echo "║            GRE Tunnel - EliasVPN           ║"
+echo "║         GRE-IPv6Local - EliasVPN           ║"
 echo "║     Persistent • Key-based • Easy Setup    ║"
 echo "╚════════════════════════════════════════════╝"
 echo -e "${NC}"
