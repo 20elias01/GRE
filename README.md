@@ -1,4 +1,4 @@
-# 🚀 GRE Tunnel Manager
+# 🚀 GRE-IPv6Local Tunnel Manager
 
 <p align="center">
   <a href="./README.fa.md">
